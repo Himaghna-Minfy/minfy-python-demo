@@ -1,42 +1,34 @@
 pipeline {
     agent any
-
+ 
     environment {
         VENV = 'venv'
     }
-
+ 
     stages {
-        stage ("Install") {
+        stage ("Build") {
             steps {
                 sh '''
-                    python3 -m venv $VENV
-                    . $VENV/bin/activate
-                    pip install --upgrade pip
-                    pip install -r requirements.txt
+                    echo "building"
+                    docker build -t minfy-python-demo .
                 '''
             }
         }
-        stage ("Linting") {
+        stage ("tag") {
             steps {
-                script {
-                    echo "This is my Linting Step"
-                }
+                sh'''
+                    echo "tagging"
+                    docker tag minfy-python-demo himaghna/minfy-python-demo:latest
+                '''
             }
         }
-        stage ("Install Packages") {
+        stage ("Push") {
             steps {
-                script {
-                    echo "This is Install PAkcges Step"
-                }
+                sh'''
+                    echo "pushing"
+                    docker push himaghna/minfy-python-demo:latest
+                '''
             }
         }
-        stage ("Run Application") {
-            steps {
-                script {
-                    echo "This is my Run applcaition Step"
-                }
-            }
-        }
-
     }
 }
